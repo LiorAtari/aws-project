@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN ls -la /app
+
 RUN pip3 install -r requirements.txt
 
 EXPOSE 8080
