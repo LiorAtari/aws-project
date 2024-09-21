@@ -51,7 +51,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          if [[ $(git status --porcelain ]]; then
+          if [[ $(git status --porcelain) ]]; then
             git add ./kubernetes/microservice-1/deployment.yaml
             git commit -m "Update image version for microservice-1 to ${{ env.tag }}"
             git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/LiorAtari/aws-project.git
