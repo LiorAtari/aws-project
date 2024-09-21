@@ -1,0 +1,52 @@
+configs:
+  repositories:
+    github-repo:
+      url: https://github.com/LiorAtari/aws-project.git
+      name: aws-project
+      type: git
+
+server:
+  additionalApplications:
+    - name: microservice-1
+      namespace: argocd
+      additionalLabels: {}
+      additionalAnnotations:
+        "helm.sh/resource-policy": keep
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      project: default
+      source:
+        repoURL: https://github.com/LiorAtari/aws-project.git
+        targetRevision: HEAD
+        path: kubernetes/microservice-1/
+        directory:
+          recurse: true
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: false
+
+    - name: microservice-2
+      namespace: argocd
+      additionalLabels: {}
+      additionalAnnotations:
+        "helm.sh/resource-policy": keep
+      finalizers:
+      - resources-finalizer.argocd.argoproj.io
+      project: default
+      source:
+        repoURL: https://github.com/LiorAtari/aws-project.git
+        targetRevision: HEAD
+        path: kubernetes/microservice-2/
+        directory:
+          recurse: true
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+      syncPolicy:
+        automated:
+          prune: false
+          selfHeal: false
