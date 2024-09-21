@@ -17,7 +17,7 @@ spec:
       serviceAccountName: ms-sa
       containers:
       - name: microservice-2
-        image: lioratari/microservice-2
+        image: lioratari/microservice-2:ms2-v0.0.1
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
