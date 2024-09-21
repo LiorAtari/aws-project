@@ -18,14 +18,15 @@ jobs:
       - name: Fetch all tags
         run: git fetch --tags
 
-      - name: Get latest tag
+      - name: Get latest tag for microservice-1
         id: get_tag
         run: |
-          TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          VERSION=${TAG#v}
+          # Get the latest tag specific to microservice-1
+          TAG=$(git describe --tags --match "ms1-v*" --abbrev=0 || echo "ms1-v0.0.0")
+          VERSION=${TAG#ms1-v}
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
           PATCH=$((PATCH + 1))
-          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          NEW_TAG="ms1-v$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_TAG"
           echo "tag=$NEW_TAG" >> $GITHUB_ENV
 
@@ -35,7 +36,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Image
+      - name: Build and Push Image for microservice-1
         run: |
           PATH_REGISTRY=${{ secrets.DOCKER_USERNAME }}/microservice-1
           DOCKERFILE_PATH=./microservices/microservice-1/Dockerfile
@@ -47,7 +48,7 @@ jobs:
         run: |
           sed -i "s|image: lioratari/microservice-1.*|image: lioratari/microservice-1:${{ env.tag }}|g" ./kubernetes/microservice-1/deployment.yaml
 
-      - name: Commit updated file
+      - name: Commit updated deployment file
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -58,6 +59,7 @@ jobs:
           else
             echo "No changes to commit"
           fi
+
       - name: Create and Push New Git Tag
         run: |
           git tag ${{ env.tag }}
