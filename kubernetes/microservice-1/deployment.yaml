@@ -14,7 +14,7 @@ spec:
       labels:
         app: microservice-1
     spec:
-      serviceAccountName: ms1-sa
+      serviceAccountName: ms-sa
       containers:
       - name: microservice-1
         image: lioratari/microservice-1
