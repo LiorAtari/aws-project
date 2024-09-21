@@ -51,8 +51,8 @@ This repository contains the infrastructure and microservices setup for a cloud-
    terraform plan
    terraform apply
 
-2. **Run the get-info script**
+2. **Run the script**
    ```bash
-   chmod +x get-info.sh
-   ./get-info.sh
+   chmod +x run.sh
+   ./run.sh
   
