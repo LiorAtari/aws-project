@@ -3,7 +3,8 @@ name: CI
 on:
   push:
     paths:
-      - 'microservices/microservice-2/**'  
+      - 'microservices/microservice-2/**'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,16 +12,55 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get latest tag for microservice-2
+        id: get_tag
+        run: |
+          # Get the latest tag specific to microservice-2
+          TAG=$(git describe --tags --match "ms2-v*" --abbrev=0 || echo "ms2-v0.0.0")
+          VERSION=${TAG#ms2-v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          PATCH=$((PATCH + 1))
+          NEW_TAG="ms2-v$MAJOR.$MINOR.$PATCH"
+          echo "New version: $NEW_TAG"
+          echo "tag=$NEW_TAG" >> $GITHUB_ENV
 
       - name: Docker Hub Login
-        uses: docker/login-action@3.3.0
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Image
+      - name: Build and Push Image for microservice-2
         run: |
           PATH_REGISTRY=${{ secrets.DOCKER_USERNAME }}/microservice-2
-          DOCKERFILE_PATH=/microservices/microservice-2/Dockerfile
-          docker build -f $DOCKERFILE_PATH -t $PATH_REGISTRY .
-          docker push $PATH_REGISTRY
+          DOCKERFILE_PATH=./microservices/microservice-2/Dockerfile
+          TAG=${{ env.tag }}
+          docker build -f $DOCKERFILE_PATH -t $PATH_REGISTRY:$TAG .
+          docker push $PATH_REGISTRY:$TAG
+
+      - name: Update Kubernetes Deployment File with New Image Version
+        run: |
+          sed -i "s|image: lioratari/microservice-2.*|image: lioratari/microservice-2:${{ env.tag }}|g" ./kubernetes/microservice-2/deployment.yaml
+
+      - name: Commit updated deployment file
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          if [[ $(git status --porcelain) ]]; then
+            git add ./kubernetes/microservice-2/deployment.yaml
+            git commit -m "Update image version for microservice-2 to ${{ env.tag }}"
+            git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/LiorAtari/aws-project.git
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Create and Push New Git Tag
+        run: |
+          git tag ${{ env.tag }}
+          git push origin ${{ env.tag }}
