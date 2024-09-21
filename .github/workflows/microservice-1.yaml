@@ -18,12 +18,9 @@ jobs:
       - name: Get latest tag
         id: get_tag
         run: |
-          # Get latest tag, fallback to v0.0.0 if none exists
           TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          # Extract tag parts (vMAJOR.MINOR.PATCH)
           VERSION=${TAG#v}
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-          # Increment patch version
           PATCH=$((PATCH + 1))
           NEW_TAG="v$MAJOR.$MINOR.$PATCH"
           echo "New version: $NEW_TAG"
@@ -43,7 +40,14 @@ jobs:
           docker build -f $DOCKERFILE_PATH -t $PATH_REGISTRY:$TAG .
           docker push $PATH_REGISTRY:$TAG
 
-      - name: Create Git tag
+      - name: Update Kubernetes Deployment File with New Image Version
         run: |
-          git tag ${{ env.tag }}
-          git push origin ${{ env.tag }}
+          sed -i "s|image: lioratari/microservice-1.*|image: lioratari/microservice-1:${{ env.tag }}|g" ./kubernetes/microservice-1/deployment.yaml
+
+      - name: Commit updated file
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add ./kubernetes/microservice-1/deployment.yaml
+          git commit -m "Update image version for microservice-1 to ${{ env.tag }}"
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/LiorAtari/aws-project.git
