@@ -83,7 +83,7 @@ def validate_payload(payload):
 
 def send_to_sqs(data, message_attributes=None):
     sqs_client = get_sqs_client()
-    queue_url = os.getenv('SQS_QUEUE_URL')
+    queue_url = "https://sqs.eu-north-1.amazonaws.com/794038222022/stadard_queue"
     if not message_attributes:
         message_attributes = {}
     try:
