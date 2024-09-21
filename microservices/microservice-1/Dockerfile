@@ -8,5 +8,4 @@ RUN pip3 install -r requirements.txt
 
 EXPOSE 8080
 
-# some change
 ENTRYPOINT ["python3", "app.py"]
