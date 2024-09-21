@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     paths:
-      - 'microservices/microservice-1/**'  
+      - 'microservices/microservice-1/**'
 
 jobs:
   build:
@@ -12,8 +12,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          # Get latest tag, fallback to v0.0.0 if none exists
+          TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          # Extract tag parts (vMAJOR.MINOR.PATCH)
+          VERSION=${TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          # Increment patch version
+          PATCH=$((PATCH + 1))
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "New version: $NEW_TAG"
+          echo "tag=$NEW_TAG" >> $GITHUB_ENV
+
       - name: Docker Hub Login
-        uses: docker/login-action@3.3.0
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -21,6 +38,12 @@ jobs:
       - name: Build and Push Image
         run: |
           PATH_REGISTRY=${{ secrets.DOCKER_USERNAME }}/microservice-1
-          DOCKERFILE_PATH=/microservices/microservice-1/Dockerfile
-          docker build -f $DOCKERFILE_PATH -t $PATH_REGISTRY .
-          docker push $PATH_REGISTRY
+          DOCKERFILE_PATH=./microservices/microservice-1/Dockerfile
+          TAG=${{ env.tag }}
+          docker build -f $DOCKERFILE_PATH -t $PATH_REGISTRY:$TAG .
+          docker push $PATH_REGISTRY:$TAG
+
+      - name: Create Git tag
+        run: |
+          git tag ${{ env.tag }}
+          git push origin ${{ env.tag }}
