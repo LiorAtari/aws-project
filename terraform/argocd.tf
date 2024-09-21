@@ -8,4 +8,5 @@ resource "helm_release" "arogcd" {
   values = [
     file("values/argocd-values.yaml")
   ]
+  depends_on = [module.eks]
 }
