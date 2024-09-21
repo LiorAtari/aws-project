@@ -44,14 +44,19 @@ This repository contains the infrastructure and microservices setup for a cloud-
 - kubectl
 - terraform
 
-1. **Infrastructure Setup**:  
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/LiorAtari/aws-project.git
+   cd aws-project
+
+3. **Infrastructure Setup**:
    Navigate to the `terraform/` directory and run the following commands to deploy the infrastructure:
    ```bash
    terraform init
    terraform plan
    terraform apply
 
-2. **Run the script**
+4. **Run the script**
    ```bash
    chmod +x run.sh
    ./run.sh
