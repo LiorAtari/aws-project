@@ -43,15 +43,20 @@ This repository contains the infrastructure and microservices setup for a cloud-
 - aws-cli
 - kubectl
 - terraform
+- argocd-cli
 
 1. **Clone the repository**
    ```bash
    git clone https://github.com/LiorAtari/aws-project.git
    cd aws-project
+   
+2. **AWS Setup**
+   - Please follow the instructions from the email for the AWS account setup before moving to the next step.
 
 3. **Infrastructure Setup**:
    Navigate to the `terraform/` directory and run the following commands to deploy the infrastructure:
    ```bash
+   cd terraform
    terraform init
    terraform plan
    terraform apply
