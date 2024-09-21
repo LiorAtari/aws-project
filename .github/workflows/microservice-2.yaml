@@ -1,4 +1,4 @@
-name: CI
+name: microservice-2
 
 on:
   push:
