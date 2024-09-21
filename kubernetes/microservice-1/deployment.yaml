@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice-1
+  labels:
+    app: microservice-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservice-1
+  template:
+    metadata:
+      labels:
+        app: microservice-1
+    spec:
+      serviceAccountName: ms1-sa
+      containers:
+      - name: microservice-1
+        image: lioratari/microservice-1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
