@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - 'microservices/microservice-2/**'  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Hub Login
+        uses: docker/login-action@3.3.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Image
+        run: |
+          PATH_REGISTRY=${{ secrets.DOCKER_USERNAME }}/microservice-2
+          DOCKERFILE_PATH=/microservices/microservice-2/Dockerfile
+          docker build -f $DOCKERFILE_PATH -t $PATH_REGISTRY .
+          docker push $PATH_REGISTRY
