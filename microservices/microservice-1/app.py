@@ -98,7 +98,7 @@ def send_to_sqs(data, message_attributes=None):
         return False
 
 # Route to handle incoming POST requests and validate payload
-@app.route('/process', methods=['POST'])
+@app.route('/', methods=['POST'])
 def process_request():
     payload = request.json
     logging.info(f"Received payload: {payload}")
