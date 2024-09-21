@@ -2,7 +2,7 @@ FROM python:3.9.20-alpine3.20
 
 WORKDIR /app
 
-COPY . .
+COPY /microservices/microservice-1 /app
 
 RUN pip3 install -r requirements.txt
 
