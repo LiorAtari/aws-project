@@ -1,4 +1,4 @@
-# DevOps Candidate Home Exam
+# Infrastructure CI/CD project
 
 This repository contains the infrastructure and microservices setup for a cloud-based application deployed on AWS, managed using Infrastructure as Code (IaC) with Terraform, and integrated with CI/CD pipelines through GitHub Actions and ArgoCD.
 
