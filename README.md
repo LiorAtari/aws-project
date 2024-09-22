@@ -61,7 +61,8 @@ This repository contains the infrastructure and microservices setup for a cloud-
    terraform plan
    terraform apply
 
-4. **Run the script**
+4. **Run the script**  
+   Once terraform finishes provisioning everything, run the following commands:
    ```bash
    chmod +x run.sh
    ./run.sh
